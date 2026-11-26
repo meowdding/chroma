@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "Chroma Library for Text and similar.",
+  "license": "ARR",
+  "icon": "assets/${id}/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "me.owdding.chroma.MeowddingChroma"
+      }
+    ]
+  },
+  "mixins": [
+    "meowdding_chroma.mixins.json"
+  ],
+  "accessWidener": "meowdding_chroma.ct",
+  "depends": {
+    "fabricloader": ">=${fl}",
+    "minecraft": "${minecraft}",
+    "fabric-language-kotlin": ">=${flk}"
+  }
+}

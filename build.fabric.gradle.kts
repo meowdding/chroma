@@ -1,10 +1,11 @@
-import dev.kikugie.stonecutter.controller.task.StonecutterTaskMutexService
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("dev.kikugie.loom-back-compat")
-    id("versioned-catalogues")
-    `maven-publish`
     kotlin("jvm")
+    alias(libs.plugins.kotlin.symbol.processor)
+    alias(libs.plugins.meowdding.auto.mixins)
+    id("versioned-catalogues")
 }
 
 version = "${project.version}+${sc.current.version}"
@@ -12,8 +13,7 @@ base.archivesName = providers.gradleProperty("id").get()
 
 val requiredJava: JavaVersion = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
-    sc.current.parsed >= "1.20.5" -> JavaVersion.VERSION_21
-    else -> JavaVersion.VERSION_1_8
+    else -> JavaVersion.VERSION_21
 }
 
 loom {
@@ -34,6 +34,19 @@ loom {
     }
 }
 
+repositories {
+    fun scopedMaven(url: String, vararg paths: String) = exclusiveContent { forRepository { maven(url) }; filter { paths.forEach(::includeGroupAndSubgroups) } }
+    mavenCentral()
+    scopedMaven(
+        "https://maven.teamresourceful.com/repository/maven-public/",
+        "earth.terrarium",
+        "com.teamresourceful",
+        "tech.thatgravyboat",
+        "me.owdding",
+        "com.terraformersmc"
+    )
+}
+
 dependencies {
     minecraft(versionedCatalog["minecraft"])
     loomx.applyMojangMappings()
@@ -42,6 +55,12 @@ dependencies {
     modImplementation(versionedCatalog["fabric-language-kotlin"])
 
     modImplementation(versionedCatalog["fabric-api"])
+
+    compileOnly(versionedCatalog["meowdding.ktmodules"])
+    compileOnly(versionedCatalog["meowdding.ktcodecs"])
+
+    ksp(versionedCatalog["meowdding.ktmodules"])
+    ksp(versionedCatalog["meowdding.ktcodecs"])
 }
 
 java {
@@ -73,30 +92,33 @@ tasks {
 
         filesMatching("fabric.mod.json") { expand(props) }
     }
+}
 
-    withType<AbstractPublishToMaven>().configureEach {
-        usesService(StonecutterTaskMutexService.create(gradle, name))
+tasks.withType<KotlinCompile>().configureEach {
+    compilerOptions {
+        optIn.addAll(
+            "kotlin.time.ExperimentalTime",
+            "kotlin.ExperimentalVersionOverloading",
+            "kotlin.contracts.ExperimentalContracts",
+        )
+        freeCompilerArgs.addAll(
+            "-Xbackend-threads=1",
+            "-Xcontext-sensitive-resolution",
+            "-Xnullability-annotations=@org.jspecify.annotations:ignore",
+            "-Xwarning-level=DEPRECATION:disabled",
+            "-Xwarning-level=REDUNDANT_VISIBILITY_MODIFIER:disabled",
+        )
+        allWarningsAsErrors = true
+        extraWarnings = true
     }
 }
 
-//publishing {
-//    repositories {
-//        val mavenUsername: String? = env.fetchOrNull("MAVEN_USERNAME")
-//        val mavenPassword: String? = env.fetchOrNull("MAVEN_PASSWORD")
-//        if (sc.properties.getAs<Boolean>("publish.maven") && mavenUsername != null && mavenPassword != null) maven(sc.properties["publish.maven_url"]) {
-//            name = "Maven"
-//            credentials {
-//                username = mavenUsername
-//                password = mavenPassword
-//            }
-//        }
-//    }
-//
-//    publications {
-//        register<MavenPublication>("maven") {
-//            groupId = "me.owdding"
-//            artifactId = "${sc.properties["mod.id"]}-fabric"
-//            from(components["java"])
-//        }
-//    }
-//}
+ksp {
+    arg("meowdding.project_name", "MeowddingLib")
+    arg("meowdding.package", "me.owdding.lib.generated")
+}
+
+autoMixins {
+    mixinPackage = "me.owdding.chroma.mixins"
+    projectName = "meowdding_chroma"
+}

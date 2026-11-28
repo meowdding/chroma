@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.symbol.processor) apply false
 }
 
-stonecutter active "26.2"
+stonecutter active "26.3"
 
 stonecutter parameters {
     swaps["mod_version"] = "\"${project.version}\";"

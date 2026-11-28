@@ -1,7 +1,7 @@
 package me.owdding.chroma
 
-import com.mojang.blaze3d.pipeline.DepthStencilState
-import com.mojang.blaze3d.pipeline.RenderPipeline
+import com.mojang.renderpearl.api.pipeline.DepthStencilState
+import com.mojang.renderpearl.api.pipeline.RenderPipeline
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
@@ -15,17 +15,62 @@ import net.minecraft.network.chat.TextColor
 import net.minecraft.resources.Identifier
 import net.minecraft.util.ARGB
 import org.joml.Vector4f
-import com.mojang.blaze3d.pipeline.ColorTargetState
+import com.mojang.renderpearl.api.pipeline.ColorTargetState
+import com.mojang.renderpearl.api.pipeline.CompareOp
 
 //? if < 26.3 {
-import com.mojang.blaze3d.pipeline.BindGroupLayout
-import com.mojang.blaze3d.platform.CompareOp
-//?}
+/*import com.mojang.renderpearl.api.pipeline.BindGroupLayout
+import me.owdding.chroma.utils.withShaderDefine
+*///?}
 //? if >= 26.3
-//import net.minecraft.client.renderer.oit.OitPipelineSet
+import net.minecraft.client.renderer.oit.OitPipelineSet
+
+private fun RenderPipeline.Builder.applyShaderParams(shader: GradientTextShader, displayMode: Font.DisplayMode?, grayscale: Boolean): RenderPipeline.Builder {
+    return this.withLocation(id("gradient_text/${displayMode?.name?.lowercase()}${if (grayscale) "_grayscale" else ""}"))
+        .withVertexShader(id("text/gradient"))
+        .withFragmentShader(id("text/gradient"))
+        //? if < 26.3
+        //.withBindGroupLayout(BindGroupLayout.builder().build())
+        .apply {
+            if (grayscale) {
+                withShaderDefine("IS_GRAYSCALE")
+            }
+
+            when (displayMode) {
+                Font.DisplayMode.SEE_THROUGH -> {
+                    withShaderDefine("IS_SEE_THROUGH")
+                }
+
+                Font.DisplayMode.POLYGON_OFFSET -> {
+                    withDepthStencilState(DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 1.0F, 10.0F))
+                }
+
+                null -> {
+                    withShaderDefine("IS_GUI")
+                }
+
+                else -> {}
+            }
+        }
+        .withShaderDefine(
+            "COLORS",
+            shader.gradient
+                .getColors()
+                .map { color -> Vector4f(ARGB.redFloat(color), ARGB.greenFloat(color), ARGB.blueFloat(color), ARGB.alphaFloat(color)) }
+                .toTypedArray(),
+        )
+        .withShaderDefine(
+            "DIRECTION",
+            shader.gradientDirection.vec,
+        )
+        .withShaderDefine(
+            "SPEED",
+            shader.speed,
+        )
+}
 
 //? if >= 26.3 {
-/*private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -> Pair<RenderPipeline, OitPipelineSet?> =
+private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -> Pair<RenderPipeline, OitPipelineSet?> =
     MemoizeUtil.memoize { shader, displayMode, grayscale ->
         val location = id("gradient_text/${displayMode?.name?.lowercase()}${if (grayscale) "_grayscale" else ""}")
         val builder = RenderPipeline.builder(
@@ -36,45 +81,7 @@ import com.mojang.blaze3d.platform.CompareOp
                     null -> add(RenderPipelines.GUI_TEXT_SNIPPET)
                 }
             }.toTypedArray(),
-        ).withLocation(location)
-            .withVertexShader(id("text/gradient"))
-            .withFragmentShader(id("text/gradient"))
-            .apply {
-                if (grayscale) {
-                    withShaderDefine("IS_GRAYSCALE")
-                }
-
-                when (displayMode) {
-                    SEE_THROUGH -> {
-                        withShaderDefine("IS_SEE_THROUGH")
-                    }
-
-                    POLYGON_OFFSET -> {
-                        withDepthStencilState(DepthStencilState(GREATER_THAN_OR_EQUAL, true, 1.0F, 10.0F))
-                    }
-
-                    null -> {
-                        withShaderDefine("IS_GUI")
-                    }
-
-                    else -> {}
-                }
-            }
-            .withShaderDefine(
-                "COLORS",
-                shader.gradient
-                    .getColors()
-                    .map { color -> Vector4f(ARGB.redFloat(color), ARGB.greenFloat(color), ARGB.blueFloat(color), ARGB.alphaFloat(color)) }
-                    .toTypedArray(),
-            )
-            .withShaderDefine(
-                "DIRECTION",
-                shader.gradientDirection.vec,
-            )
-            .withShaderDefine(
-                "SPEED",
-                shader.speed,
-            )
+        ).applyShaderParams(shader, displayMode, grayscale)
 
         if (displayMode == null) {
             return@memoize RenderPipelines.register(builder.withColorTargetState(ColorTargetState(TRANSLUCENT)).build()) to null
@@ -86,11 +93,8 @@ import com.mojang.blaze3d.platform.CompareOp
             RenderPipeline.builder(snippet).withColorTargetState(ColorTargetState(TRANSLUCENT)).withLocation(location).build(),
         ) to RenderPipelines.register(OitPipelineSet.builder("meowdding/gradient_text_shader", builder).build())
     }
-*///? } elif 26.2 {
-private val layout = BindGroupLayout.builder()
-    .build()
-
-private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -> RenderPipeline = MemoizeUtil.memoize { shader, displayMode, grayscale ->
+//? } elif 26.2 {
+/*private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -> RenderPipeline = MemoizeUtil.memoize { shader, displayMode, grayscale ->
     RenderPipelines.register(
         RenderPipeline.builder(
             *buildList {
@@ -100,50 +104,10 @@ private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -
                     null -> add(RenderPipelines.GUI_TEXT_SNIPPET)
                 }
             }.toTypedArray(),
-        ).withLocation(id("gradient_text/${displayMode?.name?.lowercase()}${if (grayscale) "_grayscale" else ""}"))
-            .withVertexShader(id("text/gradient"))
-            .withFragmentShader(id("text/gradient"))
-            .withBindGroupLayout(layout)
-            .apply {
-                if (grayscale) {
-                    withShaderDefine("IS_GRAYSCALE")
-                }
-
-                when (displayMode) {
-                    Font.DisplayMode.SEE_THROUGH -> {
-                        withShaderDefine("IS_SEE_THROUGH")
-                    }
-
-                    Font.DisplayMode.POLYGON_OFFSET -> {
-                        withDepthStencilState(DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 1.0F, 10.0F))
-                    }
-
-                    null -> {
-                        withShaderDefine("IS_GUI")
-                    }
-
-                    else -> {}
-                }
-            }
-            .withShaderDefine(
-                "COLORS",
-                shader.gradient
-                    .getColors()
-                    .map { color -> Vector4f(ARGB.redFloat(color), ARGB.greenFloat(color), ARGB.blueFloat(color), ARGB.alphaFloat(color)) }
-                    .toTypedArray(),
-            )
-            .withShaderDefine(
-                "DIRECTION",
-                shader.gradientDirection.vec,
-            )
-            .withShaderDefine(
-                "SPEED",
-                shader.speed,
-            )
-            .build(),
+        ).applyStuff(shader, displayMode, grayscale).build(),
     )
 }
-//? }
+*///? }
 
 class GradientTextShader(val gradient: GradientProvider, val gradientDirection: GradientDirection = RIGHT, val speed: Float = 1f) : TextShader {
     constructor(colors: List<Int>) : this({ colors })

@@ -21,19 +21,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class GlyphRenderTypesMixin implements TextShaderRenderTypeHolder, FontPipelineHolder.FontPipelineCreator {
 
     @Unique
-    private Identifier meowdding$texture;
+    private Identifier meowddingchroma$texture;
     @Unique
-    private Boolean meowdding$grayscale = false;
+    private Boolean meowddingchroma$grayscale = false;
 
     @ModifyReturnValue(method = {"createForColorTexture", "createForIntensityTexture", "createForGrayscaleTexture"}, at = @At("RETURN"))
     private static GlyphRenderTypes create(GlyphRenderTypes original, @Local(argsOnly = true) Identifier name) {
-        ((GlyphRenderTypesMixin) ((Object) original)).meowdding$texture = name;
+        ((GlyphRenderTypesMixin) ((Object) original)).meowddingchroma$texture = name;
         return original;
     }
 
     @ModifyReturnValue(method = {"createForGrayscaleTexture"}, at = @At("RETURN"), require = 0)
     private static GlyphRenderTypes grayscale(GlyphRenderTypes original) {
-        ((GlyphRenderTypesMixin) ((Object) original)).meowdding$grayscale = true;
+        ((GlyphRenderTypesMixin) ((Object) original)).meowddingchroma$grayscale = true;
         return original;
     }
 
@@ -47,6 +47,6 @@ public abstract class GlyphRenderTypesMixin implements TextShaderRenderTypeHolde
 
     @Override
     public RenderType meowddingchroma$createType(TextShader shader, Font.DisplayMode displayMode) {
-        return TextShaderKt.createTextRenderType(shader, meowdding$texture, displayMode, meowdding$grayscale);
+        return TextShaderKt.createTextRenderType(shader, meowddingchroma$texture, displayMode, meowddingchroma$grayscale);
     }
 }

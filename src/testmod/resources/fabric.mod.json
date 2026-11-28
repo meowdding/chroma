@@ -1,0 +1,24 @@
+{
+    "schemaVersion": 1,
+    "id": "meowdding-chroma-testmod",
+    "version": "1.0.0",
+    "name": "Meowdding Chroma",
+    "description": "Chroma Library for Text and similar.",
+    "license": "ARR",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            {
+                "adapter": "kotlin",
+                "value": "me.owdding.chroma.test.MeowddingChromaTest"
+            }
+        ]
+    },
+    "custom": {
+        "modmenu": {
+            "badges": [
+                "library"
+            ]
+        }
+    }
+}

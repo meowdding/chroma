@@ -16,6 +16,11 @@ val requiredJava: JavaVersion = when {
     else -> JavaVersion.VERSION_21
 }
 
+sourceSets.register("testmod") {
+    compileClasspath += sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath
+}
+
 loom {
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
     accessWidenerPath = sc.process(
@@ -31,6 +36,17 @@ loom {
         preferGradleTask = true
         generateRunConfig = true
         runDirectory = rootProject.file("run")
+    }
+
+    runs {
+        register("testmod") {
+            client()
+            preferGradleTask = true
+            generateRunConfig = true
+            runDirectory = rootProject.file("run")
+
+            sourceSet = "testmod"
+        }
     }
 }
 
@@ -61,6 +77,8 @@ dependencies {
 
     ksp(versionedCatalog["meowdding.ktmodules"])
     ksp(versionedCatalog["meowdding.ktcodecs"])
+
+    "testmodImplementation"(sourceSets.main.get().output)
 }
 
 java {

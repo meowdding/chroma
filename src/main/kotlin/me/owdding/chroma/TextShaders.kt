@@ -56,7 +56,9 @@ enum class PrideShader(colors: List<Int>, private val shader: GradientTextShader
         colors.toMutableList().apply { if (size > 1) addLast(first()) }
     )
 
-    fun getTranslationKey() = "mlib.gradients.${name.lowercase()}"
+    fun withDirectionAndSpeed(direction: GradientDirection = GradientDirection.RIGHT, speed: Float = 1f): GradientTextShader {
+        return GradientTextShader(getColors(), direction, speed)
+    }
 
     //@PreInitModule
     //companion object {

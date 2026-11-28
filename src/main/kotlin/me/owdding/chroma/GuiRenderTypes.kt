@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.renderpearl.api.pipeline.RenderPipeline
 import me.owdding.chroma.MeowddingChroma.id
+import me.owdding.chroma.utils.MemoizeUtil
+import me.owdding.chroma.utils.withShaderDefine
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.navigation.ScreenPosition
 import net.minecraft.client.gui.navigation.ScreenRectangle

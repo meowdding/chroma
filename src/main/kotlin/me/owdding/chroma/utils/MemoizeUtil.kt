@@ -1,4 +1,4 @@
-package me.owdding.chroma
+package me.owdding.chroma.utils
 
 import java.util.concurrent.ConcurrentHashMap
 

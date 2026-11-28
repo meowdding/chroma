@@ -1,4 +1,4 @@
-package me.owdding.chroma
+package me.owdding.chroma.utils
 
 import com.mojang.renderpearl.api.pipeline.RenderPipeline
 import me.owdding.chroma.accessor.RenderPipelineBuilderAccessor

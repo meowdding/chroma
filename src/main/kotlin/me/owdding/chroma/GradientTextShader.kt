@@ -8,6 +8,8 @@ import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import me.owdding.chroma.MeowddingChroma.id
 import me.owdding.chroma.generated.EnumCodec
+import me.owdding.chroma.utils.MemoizeUtil
+import me.owdding.chroma.utils.withShaderDefine
 import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.TextColor

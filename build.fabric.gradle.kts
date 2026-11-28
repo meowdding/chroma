@@ -9,7 +9,7 @@ plugins {
 }
 
 version = "${project.version}+${sc.current.version}"
-base.archivesName = providers.gradleProperty("id").get()
+base.archivesName = "Meowdding-Chroma"
 
 val requiredJava: JavaVersion = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
@@ -19,7 +19,7 @@ val requiredJava: JavaVersion = when {
 loom {
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
     accessWidenerPath = sc.process(
-        rootProject.file("src/main/resources/meowdding_chroma.ct"),
+        rootProject.file("src/main/resources/meowdding-chroma.ct"),
         "build/processed.ct"
     )
 
@@ -81,8 +81,6 @@ tasks {
 
     processResources {
         val props = mapOf(
-            "id" to providers.gradleProperty("id").get(),
-            "name" to providers.gradleProperty("name").get(),
             "version" to project.version,
             "minecraft" to versionedCatalog.version("minecraft-range"),
             "fl" to versionedCatalog.version("fabric-loader"),
@@ -114,11 +112,11 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 ksp {
-    arg("meowdding.project_name", "MeowddingLib")
-    arg("meowdding.package", "me.owdding.lib.generated")
+    arg("meowdding.project_name", "MeowddingChroma")
+    arg("meowdding.package", "me.owdding.chroma.generated")
 }
 
 autoMixins {
     mixinPackage = "me.owdding.chroma.mixins"
-    projectName = "meowdding_chroma"
+    projectName = "meowdding-chroma"
 }

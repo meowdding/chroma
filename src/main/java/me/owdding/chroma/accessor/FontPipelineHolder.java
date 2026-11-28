@@ -22,7 +22,7 @@ public interface FontPipelineHolder {
             return instance instanceof FontPipelineCreator holder ? holder : null;
         }
 
-        RenderType meowddingchromab$createType(TextShader shader, Font.DisplayMode displayMode);
+        RenderType meowddingchroma$createType(TextShader shader, Font.DisplayMode displayMode);
 
     }
 }

@@ -117,6 +117,6 @@ ksp {
 }
 
 autoMixins {
-    mixinPackage = "me.owdding.chroma.mixins"
+    mixinPackage = "me.owdding.chroma.mixin"
     projectName = "meowdding-chroma"
 }

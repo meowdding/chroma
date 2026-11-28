@@ -60,7 +60,7 @@ enum class PrideShader(colors: List<Int>, private val shader: GradientTextShader
 
     //@PreInitModule
     //companion object {
-    //    val ID = MeowddingLib.id("named_gradient")
+    //    val ID = id("named_gradient")
     //    val CODEC: MapCodec<PrideShader> = MeowddingLibCodecs.getCodec<PrideShader>().fieldOf("name")
 
     //    @Subscription

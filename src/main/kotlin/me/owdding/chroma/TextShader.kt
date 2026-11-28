@@ -1,6 +1,6 @@
 package me.owdding.chroma
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline
+import com.mojang.blaze3d.pipeline.RenderPipeline
 import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.rendertype.RenderSetup
 import net.minecraft.client.renderer.rendertype.RenderType
@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier
 import net.minecraft.util.Util
 
 //? >= 26.3
-import net.minecraft.client.renderer.oit.OitPipelineSet
+//import net.minecraft.client.renderer.oit.OitPipelineSet
 
 data class TextShaderInfo(val pipeline: PipelineResult, val texture: Identifier, val displayMode: Font.DisplayMode, val grayScale: Boolean)
 
@@ -18,12 +18,12 @@ val TEXT_RENDER_TYPE_CACHE: (TextShaderInfo) -> RenderType = Util.memoize<TextSh
     RenderType.create(
         "meowddingchroma/font_shader",
         //~ if >= 26.3 'pipeline' -> 'pipeline.first'
-        RenderSetup.builder(it.pipeline.first)
+        RenderSetup.builder(it.pipeline)
             //? if >= 26.3 {
-            .apply {
+            /*.apply {
                 setOitPipelines(it.pipeline.second ?: return@apply)
             }
-            //? }
+            *///? }
             .useLightmap()
             .sortOnUpload()
             .withTexture("Sampler0", it.texture)
@@ -41,7 +41,7 @@ fun createTextRenderType(
 }
 
 //? if < 26.3 {
-/*fun createTextRenderType(
+fun createTextRenderType(
     pipeline: RenderPipeline,
     location: Identifier,
     mode: Font.DisplayMode,
@@ -49,7 +49,7 @@ fun createTextRenderType(
 ): RenderType {
     return TEXT_RENDER_TYPE_CACHE(TextShaderInfo(pipeline, location, mode, grayScale))
 }
-*///? }
+//? }
 
 fun Style.textShader(): TextShader? {
     return this.`meowddingchroma$getTextShader`()
@@ -66,9 +66,9 @@ var MutableComponent.textShader: TextShader?
     }
 
 //? if < 26.3
-//typealias PipelineResult = RenderPipeline
+typealias PipelineResult = RenderPipeline
 //? if >= 26.3
-typealias PipelineResult = Pair<RenderPipeline, OitPipelineSet?>
+//typealias PipelineResult = Pair<RenderPipeline, OitPipelineSet?>
 
 
 interface TextShader {
@@ -81,7 +81,7 @@ interface TextShader {
     val hasShadow: Boolean? get() = null
 
     //? if < 26.3 {
-    //fun getPipeline(mode: Font.DisplayMode?, grayScale: Boolean): RenderPipeline = getPipelines(mode, grayScale)
+    fun getPipeline(mode: Font.DisplayMode?, grayScale: Boolean): RenderPipeline = getPipelines(mode, grayScale)
     //?}
     fun getPipelines(mode: Font.DisplayMode?, grayScale: Boolean): PipelineResult = pipeline(mode, grayScale)
 

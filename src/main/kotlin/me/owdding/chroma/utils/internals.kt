@@ -1,6 +1,6 @@
 package me.owdding.chroma.utils
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline
+import com.mojang.blaze3d.pipeline.RenderPipeline
 import me.owdding.chroma.accessor.RenderPipelineBuilderAccessor
 import org.joml.Vector2f
 import org.joml.Vector3f

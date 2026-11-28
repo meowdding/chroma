@@ -1,8 +1,7 @@
 package me.owdding.chroma
 
-import com.mojang.renderpearl.api.pipeline.ColorTargetState
-import com.mojang.renderpearl.api.pipeline.DepthStencilState
-import com.mojang.renderpearl.api.pipeline.RenderPipeline
+import com.mojang.blaze3d.pipeline.DepthStencilState
+import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
@@ -16,12 +15,17 @@ import net.minecraft.network.chat.TextColor
 import net.minecraft.resources.Identifier
 import net.minecraft.util.ARGB
 import org.joml.Vector4f
+import com.mojang.blaze3d.pipeline.ColorTargetState
 
+//? if < 26.3 {
+import com.mojang.blaze3d.pipeline.BindGroupLayout
+import com.mojang.blaze3d.platform.CompareOp
+//?}
 //? if >= 26.3
-import net.minecraft.client.renderer.oit.OitPipelineSet
+//import net.minecraft.client.renderer.oit.OitPipelineSet
 
 //? if >= 26.3 {
-private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -> Pair<RenderPipeline, OitPipelineSet?> =
+/*private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -> Pair<RenderPipeline, OitPipelineSet?> =
     MemoizeUtil.memoize { shader, displayMode, grayscale ->
         val location = id("gradient_text/${displayMode?.name?.lowercase()}${if (grayscale) "_grayscale" else ""}")
         val builder = RenderPipeline.builder(
@@ -82,8 +86,8 @@ private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -
             RenderPipeline.builder(snippet).withColorTargetState(ColorTargetState(TRANSLUCENT)).withLocation(location).build(),
         ) to RenderPipelines.register(OitPipelineSet.builder("meowdding/gradient_text_shader", builder).build())
     }
-//? } elif 26.2 {
-/*private val layout = BindGroupLayout.builder()
+*///? } elif 26.2 {
+private val layout = BindGroupLayout.builder()
     .build()
 
 private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -> RenderPipeline = MemoizeUtil.memoize { shader, displayMode, grayscale ->
@@ -96,9 +100,9 @@ private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -
                     null -> add(RenderPipelines.GUI_TEXT_SNIPPET)
                 }
             }.toTypedArray(),
-        ).withLocation(MeowddingLib.id("gradient_text/${displayMode?.name?.lowercase()}${if (grayscale) "_grayscale" else ""}"))
-            .withVertexShader(MeowddingLib.id("text/gradient"))
-            .withFragmentShader(MeowddingLib.id("text/gradient"))
+        ).withLocation(id("gradient_text/${displayMode?.name?.lowercase()}${if (grayscale) "_grayscale" else ""}"))
+            .withVertexShader(id("text/gradient"))
+            .withFragmentShader(id("text/gradient"))
             .withBindGroupLayout(layout)
             .apply {
                 if (grayscale) {
@@ -123,14 +127,14 @@ private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -
             }
             .withShaderDefine(
                 "COLORS",
-                shader.gradientProvider
+                shader.gradient
                     .getColors()
                     .map { color -> Vector4f(ARGB.redFloat(color), ARGB.greenFloat(color), ARGB.blueFloat(color), ARGB.alphaFloat(color)) }
                     .toTypedArray(),
             )
             .withShaderDefine(
                 "DIRECTION",
-                shader.direction.vec,
+                shader.gradientDirection.vec,
             )
             .withShaderDefine(
                 "SPEED",
@@ -139,7 +143,7 @@ private val pipelineCreator0: (GradientTextShader, Font.DisplayMode?, Boolean) -
             .build(),
     )
 }
-*///? }
+//? }
 
 class GradientTextShader(val gradient: GradientProvider, val gradientDirection: GradientDirection = RIGHT, val speed: Float = 1f) : TextShader {
     constructor(colors: List<Int>) : this({ colors })
@@ -163,7 +167,8 @@ class GradientTextShader(val gradient: GradientProvider, val gradientDirection: 
         val CODEC: MapCodec<GradientTextShader> = RecordCodecBuilder.mapCodec {
             it.group(
                 GradientProvider.CODEC.fieldOf("colors").forGetter { it.gradient },
-                EnumCodec.forKCodec(GradientDirection.entries.toTypedArray()).optionalFieldOf("direction", GradientDirection.RIGHT).forGetter { it.gradientDirection },
+                EnumCodec.forKCodec(GradientDirection.entries.toTypedArray()).optionalFieldOf("direction", GradientDirection.RIGHT)
+                    .forGetter { it.gradientDirection },
                 Codec.FLOAT.optionalFieldOf("speed", 1f).forGetter { it.speed },
             ).apply(it, ::GradientTextShader)
         }

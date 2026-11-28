@@ -2,7 +2,7 @@ package me.owdding.chroma
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.VertexConsumer
-import com.mojang.renderpearl.api.pipeline.RenderPipeline
+import com.mojang.blaze3d.pipeline.RenderPipeline
 import me.owdding.chroma.MeowddingChroma.id
 import me.owdding.chroma.utils.MemoizeUtil
 import me.owdding.chroma.utils.withShaderDefine
@@ -67,7 +67,7 @@ object GuiRenderTypes {
         val pipeline = GUI_GRADIENT(colors, speed, direction)
         val bounds = ScreenRectangle(ScreenPosition(x, y), width, height).transformAxisAligned(pose)
         //? if >= 26.3
-        RenderSystem.getCompiledPipelineNullable(pipeline) ?: return // we skip, the compiling shouldn't take long
+        //RenderSystem.getCompiledPipelineNullable(pipeline) ?: return // we skip, the compiling shouldn't take long
         this.guiRenderState.addGuiElement(object : GuiElementRenderState {
             override fun buildVertices(vertexConsumer: VertexConsumer) {
                 vertexConsumer.addVertexWith2DPose(pose, x.toFloat(), y.toFloat()).setColor(-1)

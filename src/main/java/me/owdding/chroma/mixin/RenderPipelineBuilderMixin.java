@@ -1,6 +1,6 @@
 package me.owdding.chroma.mixin;
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import java.util.Optional;
 import me.owdding.chroma.accessor.RenderPipelineBuilderAccessor;
 import net.minecraft.client.renderer.ShaderDefines;

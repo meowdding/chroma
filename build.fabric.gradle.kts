@@ -84,7 +84,7 @@ tasks {
             "id" to providers.gradleProperty("id").get(),
             "name" to providers.gradleProperty("name").get(),
             "version" to project.version,
-            "minecraft" to versionedCatalog.version("minecraft"),
+            "minecraft" to versionedCatalog.version("minecraft-range"),
             "fl" to versionedCatalog.version("fabric-loader"),
             "flk" to versionedCatalog.version("fabric-language-kotlin"),
         )
